@@ -196,6 +196,7 @@ about:"Show information about this module.",status:"Display a quick status repor
 const icons={system:"▣",files:"▤",text:"✎",math:"∑",time:"◷",network:"⌁",web:"◎",dev:"⌘",design:"◇",games:"♧",productivity:"▦",ai:"✧"};
 let allCommands=[],activeCategory="all",runs=0;
 for(const [cat,label,desc,names] of modules){names.forEach((name,i)=>{let clean=name.trim();let commandName=clean.toLowerCase();allCommands.push({id:cat+"."+commandName,cat,label,name:clean,desc:descriptions[clean]||`${clean.replace(/([A-Z])/g," $1")} utility in the ${label.toLowerCase()} module. Run it to see a practical example or quick reference.`})})}
+allCommands.push({id:"who",cat:"system",label:"System tools",name:"who is Bardia",desc:"A clearly fictional, humorous security-style report."});
 document.getElementById("totalCount").textContent=allCommands.length;
 document.getElementById("statCommands").innerHTML=allCommands.length+' <em>ready</em>';
 document.getElementById("visibleCount").textContent=allCommands.length;
@@ -230,6 +231,32 @@ function render(){
 function out(html){if(uiLanguage==="fa"){const plain=document.createElement("div");plain.innerHTML=html;let raw=plain.textContent||"";raw=raw.replace("COMMAND AI HELP","راهنمای COMMAND AI").replace("Command not found.","فرمان پیدا نشد.").replace("Try “help” or search the command library.","help را امتحان کنید یا در کتابخانه فرمان‌ها جست‌وجو کنید.").replace("Valid JSON ✓","JSON معتبر است ✓").replace("Cannot divide by zero.","تقسیم بر صفر امکان‌پذیر نیست.").replace("No extension found.","پسوندی پیدا نشد.").replace("Good morning.","صبح بخیر.").replace("Good afternoon.","ظهر بخیر.").replace("Good evening.","عصر بخیر.").replace("A piano.","پیانو.").replace("COMMAND AI v2.6.1","COMMAND AI نسخه ۲.۶.۰").replace("commands available.","فرمان در دسترس است.").replace("Categories:","دسته‌ها:").replace("Status: OPERATIONAL","وضعیت: فعال").replace(" · Runtime: browser · External connection: not required · Command registry:"," · محیط اجرا: مرورگر · اتصال خارجی: لازم نیست · تعداد فرمان‌ها:").replace(" (random integer from 1 to 100)"," (عدد تصادفی بین ۱ تا ۱۰۰)").replace("random integer from 1 to 100","عدد تصادفی بین ۱ تا ۱۰۰").replace(" characters · "," نویسه · ").replace(" words"," واژه").replace("Word count:","تعداد واژه‌ها:").replace("Occurrences of each character:","تعداد تکرار هر نویسه:").replace("You rolled a ","عدد تاس شما: ").replace("Computer chose ","انتخاب رایانه: ").replace(". Play again!"," . دوباره بازی کنید!").replace("A small discovery will brighten your day.","یک کشف کوچک روزتان را روشن می‌کند.").replace("The best idea arrives after a short break.","بهترین ایده پس از استراحتی کوتاه از راه می‌رسد.").replace("Try the door you have been walking past.","دری را امتحان کنید که همیشه از کنارش می‌گذرید.").replace("Curiosity is your secret superpower.","کنجکاوی، قدرت ویژه شماست.");html=esc(raw).replace(/راهنمای COMMAND AI/,'<span class="ok">راهنمای COMMAND AI</span>')}let t=document.getElementById("terminal"),d=document.createElement("div");d.className="line";d.innerHTML=html;t.appendChild(d);t.scrollTop=t.scrollHeight}
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 function runCommand(raw){let input=raw.trim();if(!input)return;let parts=input.split(/\s+/),id=parts.shift().toLowerCase(),arg=parts.join(" ");out(`<span class="dim">› ${esc(input)}</span>`);runs++;document.getElementById("runCount").textContent=runs;
+if(id==="who" && (!arg || arg.toLowerCase()==="is bardia")){
+ const panel=document.createElement("div");
+ panel.className="line";
+ panel.style.cssText="margin:10px 0;padding:12px 14px;border:1px solid rgba(255,70,85,.45);border-radius:10px;background:rgba(255,50,70,.055);white-space:normal;line-height:1.65";
+ const add=(text,important=false)=>{const el=document.createElement("div");el.textContent=text;if(important){el.style.color="#ff5364";el.style.fontWeight="800"}panel.appendChild(el)};
+ if(uiLanguage==="fa"){
+  add("گزارش امنیتی طنزآمیز — پرونده: بردیا",true);
+  add("هویت: فردی با میزان اعتمادِ بسیار نامشخص",true);
+  add("بردیا در این سناریوی کاملاً خیالی به دست‌کاری محیط COMMAND AI متهم شده است.");
+  add("میزان آشفتگی ایجادشده: نامعلوم. وضعیت یکپارچگی سیستم: نیازمند بررسیِ بیشتر.");
+  add("سطح تهدید: به‌شدت مشکوک (صرفاً در حد شوخی)",true);
+  add("وضعیت امنیتی: اعتماد کافی یافت نشد.",true);
+  add("این گزارش ساختگی و صرفاً برای سرگرمی است؛ هیچ ادعای واقعی دربارهٔ شخصی به نام بردیا نیست.");
+ }else{
+  add("FICTIONAL SECURITY REPORT — CASE: BARDIA",true);
+  add("IDENTITY: HIGHLY QUESTIONABLE TRUST STATUS",true);
+  add("In this entirely fictional scenario, Bardia is suspected of tampering with the COMMAND AI workspace.");
+  add("The extent of the alleged chaos is unknown. System integrity: further investigation required.");
+  add("THREAT LEVEL: EXTREMELY QUESTIONABLE (JUST FOR FUN)",true);
+  add("SECURITY STATUS: TRUST NOT VERIFIED.",true);
+  add("This report is fictional and for entertainment only. It makes no real-world claim about anyone named Bardia.");
+ }
+ document.getElementById("terminal").appendChild(panel);
+ document.getElementById("terminal").scrollTop=document.getElementById("terminal").scrollHeight;
+ return;
+}
 let c=allCommands.find(x=>x.id===id);
 if(id==="help"){out(`<span class="ok">COMMAND AI HELP</span> — ${uiLanguage==="fa"?`${allCommands.length} فرمان در ۱۲ بخش. جست‌وجو کنید، یک کارت را انتخاب کنید یا module.command را بنویسید. نمونه‌ها: text.upper hello · math.add 2 3 · ai.ask tell me a story`:`${allCommands.length} commands across 12 modules. Use search, tap a card, or type module.command. Examples: text.upper hello · math.add 2 3 · ai.ask tell me a story`}`);return}
 if(id==="clear"){const term=document.getElementById("terminal");term.replaceChildren();const line=document.createElement("div");line.className="line";line.textContent=uiLanguage==="fa"?"کنسول پاک شد.":"Console cleared.";term.appendChild(line);return}
