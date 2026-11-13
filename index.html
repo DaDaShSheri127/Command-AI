@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#090d16">
+<title>COMMAND AI — Control Desk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#090d16;--panel:#101827;--panel2:#131e30;--line:#25334a;--text:#eaf1fb;--muted:#8d9bb1;--accent:#8ce8d0;--accent2:#8aaeff;--yellow:#f1cb83;--red:#ff8e9b;--shadow:0 18px 60px #0005}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 80% -20%,#243b59 0%,transparent 38%),var(--bg);color:var(--text);font-family:Manrope,Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;min-height:100vh;transition:background .35s,color .35s}
+button,input{font:inherit}button{cursor:pointer}.app{min-height:100vh;display:grid;grid-template-columns:250px minmax(0,1fr)}
+.sidebar{background:#0b111d;border-right:1px solid var(--line);padding:22px 15px;display:flex;flex-direction:column;gap:22px;min-height:100vh;position:sticky;top:0;height:100vh}
+.logo{display:flex;align-items:center;gap:11px;padding:0 9px}.logo-mark{height:34px;width:34px;border-radius:11px;background:linear-gradient(145deg,#9cf3dc,#74a7ff);display:grid;place-items:center;color:#07121c;font-weight:900;font-size:18px;box-shadow:0 5px 25px #8ce8d044}.logo strong{font-size:13px;letter-spacing:.17em}.logo small{display:block;color:var(--muted);font-size:9px;letter-spacing:.2em;margin-top:3px}
+.side-label{font-size:9px;letter-spacing:.2em;color:#62728b;padding:0 11px;margin-bottom:8px}.nav{display:grid;gap:5px}.nav button{background:transparent;border:1px solid transparent;color:#aab8cd;text-align:left;padding:10px 11px;border-radius:9px;font-size:12px;display:flex;align-items:center;gap:10px}.nav button span:first-child{width:18px;text-align:center;color:var(--accent)}.nav button:hover,.nav button.active{background:#162337;border-color:#2a3d58;color:#fff}.side-bottom{margin-top:auto;border:1px solid var(--line);border-radius:12px;padding:13px;background:#101a29}.live{font-size:9px;letter-spacing:.17em;color:var(--accent)}.side-bottom p{font-size:11px;line-height:1.6;color:var(--muted);margin:8px 0 0}
+main{min-width:0;padding:26px clamp(18px,3.3vw,48px) 50px;max-width:1600px;width:100%;margin:0 auto}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:36px}.crumb{font-size:11px;color:var(--muted)}.crumb b{color:#e9f2ff;font-weight:600}.top-actions{display:flex;align-items:center;gap:9px}.chip{border:1px solid var(--line);border-radius:999px;padding:8px 11px;color:#a8b6ca;font-size:10px;background:#101827}.online-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#7de6b1;margin-right:6px;box-shadow:0 0 10px #7de6b1}
+.hero{display:flex;justify-content:space-between;align-items:end;gap:20px;margin-bottom:25px}.eyebrow{font-size:9px;letter-spacing:.25em;color:var(--accent);font-weight:800}.hero h1{font-size:clamp(30px,4vw,46px);letter-spacing:-.055em;margin:10px 0 7px;font-weight:650}.hero p{color:var(--muted);font-size:13px;line-height:1.6;margin:0;max-width:620px}.countbox{border:1px solid #36506b;background:linear-gradient(145deg,#172b3a,#111a2a);padding:14px 18px;border-radius:14px;min-width:130px}.countbox strong{display:block;font-size:27px;letter-spacing:-.05em;color:var(--accent)}.countbox span{font-size:9px;letter-spacing:.15em;color:var(--muted)}
+.commandbar{display:flex;align-items:center;gap:10px;padding:10px;background:#111b2b;border:1px solid #30415a;border-radius:14px;box-shadow:var(--shadow);margin-bottom:22px}.prompt{color:var(--accent);font-family:ui-monospace,monospace;padding-left:8px}.commandbar input{flex:1;min-width:0;background:transparent;border:0;outline:0;color:#f3f7ff;font-family:ui-monospace,monospace;font-size:13px;padding:8px}.commandbar input::placeholder{color:#65748a}.run{border:0;border-radius:9px;background:var(--accent);color:#07141b;padding:10px 17px;font-size:11px;font-weight:800}.run:hover{filter:brightness(1.08)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:27px}.stat{border:1px solid var(--line);background:#101827b8;border-radius:12px;padding:14px 15px}.stat small{font-size:9px;letter-spacing:.15em;color:var(--muted)}.stat strong{display:block;font-size:21px;margin-top:6px;letter-spacing:-.04em}.stat em{font-size:10px;color:var(--accent);font-style:normal;margin-left:5px}
+.section-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:22px 0 13px}.section-head h2{font-size:15px;margin:0;font-weight:650}.section-head span{font-size:10px;color:var(--muted)}
+.filters{display:flex;gap:7px;overflow:auto;padding-bottom:6px;margin-bottom:15px}.filter{white-space:nowrap;background:#111a29;color:#9cabc0;border:1px solid var(--line);padding:7px 11px;border-radius:999px;font-size:10px}.filter.active{background:#17382f;color:var(--accent);border-color:#3d7869}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.empty-state{grid-column:1/-1;margin:0;padding:28px 18px;border:1px dashed var(--line);border-radius:12px;color:var(--muted);text-align:center;font-size:12px}.cmd{background:linear-gradient(145deg,#121d2d,#0e1624);border:1px solid var(--line);border-radius:12px;padding:13px;min-width:0;transition:.18s;cursor:pointer}.cmd:hover{transform:translateY(-2px);border-color:#527b83;background:#152438}.cmd-top{display:flex;justify-content:space-between;gap:8px;align-items:center}.cmd code{font-family:ui-monospace,monospace;font-size:11px;color:#c5d7f4;overflow-wrap:anywhere}.cmd .arrow{color:#627d9c;font-size:13px}.cmd p{font-size:10px;color:var(--muted);line-height:1.5;margin:8px 0 0}.cmd-foot{display:flex;justify-content:space-between;align-items:center;margin-top:11px}.tag{font-size:8px;color:#7e93b1;letter-spacing:.12em;text-transform:uppercase}.try{font-size:9px;color:var(--accent)}
+.workspace{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(250px,.7fr);gap:13px;margin-top:27px}.terminal,.helpbox{border:1px solid var(--line);border-radius:14px;background:#0d1522;overflow:hidden}.term-head{padding:12px 15px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;background:#111b2a}.term-title{font-size:10px;letter-spacing:.16em;color:#c4d0e2}.term-lights{display:flex;gap:5px}.term-lights i{width:7px;height:7px;border-radius:50%;background:#43536b}.term-body{height:230px;overflow:auto;padding:15px;font:11px/1.8 ui-monospace,SFMono-Regular,monospace;color:#b4c2d6}.line{white-space:pre-wrap;overflow-wrap:anywhere}.line .ok{color:var(--accent)}.line .dim{color:#74849d}.line .warn{color:var(--yellow)}.helpbox{padding:17px}.helpbox h3{font-size:13px;margin:0 0 10px}.helpbox p{font-size:11px;color:var(--muted);line-height:1.65;margin:0}.examples{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}.examples button{background:#17243a;color:#a9c0df;border:1px solid #2b405e;border-radius:7px;padding:6px 8px;font:10px ui-monospace,monospace}
+.top-settings{border:1px solid var(--accent-border);background:var(--accent-soft);color:var(--text);border-radius:10px;padding:8px 11px;font-size:11px;font-weight:700;white-space:nowrap}.top-settings:hover{transform:translateY(-1px);box-shadow:0 7px 20px color-mix(in srgb,var(--accent) 18%,transparent)}body[data-mode="day"] .top-settings{color:#26354b}
+.toast{position:fixed;bottom:20px;right:20px;background:#172b36;border:1px solid #447a70;color:#d9fff2;padding:11px 15px;border-radius:10px;font-size:11px;opacity:0;transform:translateY(8px);transition:.25s;pointer-events:none}.toast.show{opacity:1;transform:none}
+
+/* Personalization, motion and responsive settings */
+:root{--accent:#b98a62;--accent-soft:#b98a6230;--accent-border:#b98a6270;--accent-ink:#160e08}
+body{background-image:radial-gradient(ellipse at 80% -20%,color-mix(in srgb,var(--accent) 23%,transparent) 0%,transparent 40%);font-family:Manrope,Inter,system-ui,sans-serif}
+button,.cmd,.stat,.panel,.terminal,.helpbox,.setting-card{transition:all .24s cubic-bezier(.2,.8,.2,1)}
+.cmd:hover{box-shadow:0 12px 34px color-mix(in srgb,var(--accent) 13%,transparent)}
+.run{background:var(--accent);color:var(--accent-ink);box-shadow:0 5px 18px color-mix(in srgb,var(--accent) 22%,transparent)}
+.prompt,.live,.cmd .try,.cmd .tag{color:var(--accent)}
+.nav button span:first-child{color:var(--accent)}
+.nav button.active{border-color:var(--accent-border);background:var(--accent-soft)}
+.filter.active{background:var(--accent-soft);color:var(--accent);border-color:var(--accent-border)}
+.logo-mark{background:linear-gradient(145deg,var(--accent),#8aaeff);box-shadow:0 5px 25px color-mix(in srgb,var(--accent) 30%,transparent)}
+.countbox strong{color:var(--accent)}
+body[data-mode="day"]{--bg:#edf2f8;--panel:#fff;--panel2:#f4f7fb;--line:#d5deea;--text:#182438;--muted:#63728a;--shadow:0 18px 60px #34445a18;background-color:var(--bg);background-image:radial-gradient(ellipse at 80% -20%,color-mix(in srgb,var(--accent) 18%,white) 0%,transparent 42%)}
+body[data-mode="day"] .sidebar{background:#e4ebf4}
+body[data-mode="day"] .side-bottom,body[data-mode="day"] .stat,body[data-mode="day"] .cmd,body[data-mode="day"] .panel,body[data-mode="day"] .helpbox{background:#ffffffd9}
+body[data-mode="day"] .commandbar,body[data-mode="day"] .terminal{background:#f9fbff}
+body[data-mode="day"] .term-head{background:#eaf0f7}
+body[data-mode="day"] .term-body{color:#35445b}
+body[data-mode="day"] .nav button{color:#43536b}
+body[data-mode="day"] .nav button.active{color:#152338}
+body[data-mode="day"] .chip,body[data-mode="day"] .filter,body[data-mode="day"] .examples button{background:#fff;color:#53637a}
+body[data-mode="day"] .commandbar input{color:#17253b}
+body[data-mode="day"] .commandbar input::placeholder{color:#8190a5}
+body[data-mode="day"] .countbox{background:#fff}
+body[data-mode="day"] .crumb b{color:#1b2a40}
+body[data-mode="day"] .cmd code{color:#314765}
+body[data-mode="day"] .settings-page .setting-card{background:#fff}
+body[data-mode="day"] .setting-card p,body[data-mode="day"] .settings-foot{color:#66758a}
+body[data-mode="day"] .term-title{color:#35445b}
+body[data-mode="day"] .term-lights i{background:#9aa9bc}
+html[lang="fa"] body{font-family:Vazirmatn,Tahoma,sans-serif}
+html[lang="fa"] .hero h1,html[lang="fa"] .section-head h2,html[lang="fa"] .settings-heading h2{letter-spacing:0}
+html[lang="fa"] .sidebar{border-right:0;border-left:1px solid var(--line)}
+html[lang="fa"] .nav button{text-align:right}
+html[lang="fa"] .topbar,html[lang="fa"] .section-head{direction:rtl}
+html[lang="fa"] .hero,html[lang="fa"] .stats,html[lang="fa"] .workspace,html[lang="fa"] .settings-grid{direction:rtl}
+html[lang="fa"] .commandbar{direction:ltr}
+html[lang="fa"] .term-body{text-align:right;direction:rtl}
+html[lang="fa"] .settings-heading{direction:rtl}
+html[lang="fa"] .settings-foot{text-align:right}
+html[lang="fa"] .setting-card{text-align:right}
+html[lang="fa"] .side-label{text-align:right}
+html[lang="fa"] .logo{direction:ltr}
+html[lang="fa"] .quote{text-align:right}
+.cmd[data-cat="ai"]{background:linear-gradient(135deg,#211a3b,#14243b 65%,#102a35);border-color:#765bb1}
+.cmd[data-cat="ai"]:hover{box-shadow:0 12px 38px #9a75ff26;border-color:#b59aff}
+.cmd[data-cat="ai"] .tag,.cmd[data-cat="ai"] .try{color:#c6a7ff}
+.ai-special{border-color:#765bb1!important;background:linear-gradient(130deg,#211a3b,#15243b 65%,#10303a)!important}
+.ai-special .setting-icon{background:#6e4db4;color:#fff}
+.ai-preview{margin-top:17px;border:1px solid #8063c9;border-radius:12px;padding:15px;background:radial-gradient(circle at 15% 20%,#9b6bff40,transparent 45%),linear-gradient(110deg,#1c1835,#102c39);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.ai-preview span{font-size:23px;color:#d4b8ff}.ai-preview b{font-size:11px;letter-spacing:.16em}.ai-preview small{font-size:8px;letter-spacing:.15em;color:#a8b4d2}
+.settings-page{animation:pageIn .35s ease both}
+.settings-heading{display:flex;justify-content:space-between;align-items:end;gap:18px;margin:8px 0 24px}
+.settings-heading h2{font-size:36px;letter-spacing:-.04em;margin:8px 0}
+.settings-heading p{font-size:13px;color:var(--muted);margin:0}
+.back-btn{background:var(--panel2);border-color:var(--line);border-radius:9px;font-size:11px}
+.settings-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.setting-card{background:#111b2b;border:1px solid var(--line);border-radius:16px;padding:20px;min-width:0;animation:cardIn .5s both}
+.setting-card:nth-child(2){animation-delay:.06s}.setting-card:nth-child(3){animation-delay:.12s}.setting-card:nth-child(4){animation-delay:.18s}
+.setting-icon{height:36px;width:36px;border-radius:11px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-size:19px;margin-bottom:13px}
+.setting-card h3{font-size:15px;margin:0 0 6px}.setting-card p{font-size:11px;line-height:1.65;color:var(--muted);margin:0;max-width:440px}
+.setting-options,.language-options{display:flex;gap:9px;margin-top:17px}
+.choice{flex:1;min-width:0;background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:12px;text-align:left;display:flex;flex-direction:column;gap:5px}
+.choice>span{font-size:19px}.choice b{font-size:11px}.choice small{font-size:9px;color:var(--muted)}
+.choice.active{border-color:var(--accent);background:var(--accent-soft);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 12%,transparent)}
+.swatches{display:grid;grid-template-columns:repeat(7,1fr);gap:7px;margin-top:18px}
+.swatch{padding:9px 3px;border:1px solid var(--line);background:var(--panel2);border-radius:10px;display:flex;flex-direction:column;align-items:center;gap:5px;min-width:0}
+.swatch i{width:22px;height:22px;border-radius:50%;background:var(--sw);box-shadow:0 0 18px color-mix(in srgb,var(--sw) 45%,transparent)}
+.swatch span{font-size:13px}.swatch small{font-size:8px;color:var(--muted)}
+.swatch.active{border-color:var(--sw);background:color-mix(in srgb,var(--sw) 13%,var(--panel2));transform:translateY(-3px)}
+.settings-foot{font-size:10px;color:var(--muted);margin-top:18px}
+@keyframes pageIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes cardIn{from{opacity:0;transform:translateY(12px) scale(.99)}to{opacity:1;transform:none}}
+@keyframes softPulse{0%,100%{box-shadow:0 0 0 0 color-mix(in srgb,var(--accent) 0%,transparent)}50%{box-shadow:0 0 0 5px color-mix(in srgb,var(--accent) 8%,transparent)}}
+@media(max-width:760px){.settings-grid{grid-template-columns:1fr}.settings-heading{align-items:start;flex-direction:column}.swatches{gap:4px}.swatch small{font-size:7px}}
+
+@media(max-width:1050px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.app{grid-template-columns:215px minmax(0,1fr)}}
+@media(max-width:760px){.app{display:block}.sidebar{position:relative;height:auto;min-height:0;padding:13px 15px;border-right:0;border-bottom:1px solid var(--line);gap:12px}.sidebar .nav-wrap{display:block;min-width:0}.sidebar .side-label{display:none}.sidebar .nav{display:flex;overflow-x:auto;gap:6px;padding:2px 0 5px;scrollbar-width:thin}.sidebar .nav button{flex:0 0 auto;white-space:nowrap;padding:8px 10px}.side-bottom{display:none}.logo{padding:0}.topbar{margin-bottom:25px}.hero{align-items:start;flex-direction:column}.countbox{display:flex;align-items:center;gap:12px;padding:9px 13px}.countbox strong{font-size:20px}.stats{grid-template-columns:repeat(2,1fr)}.workspace{grid-template-columns:1fr}main{padding-top:20px}}
+@media(max-width:470px){.grid{grid-template-columns:1fr}.commandbar{gap:5px}.run{padding:10px 12px}.chip:nth-child(2){display:none}.hero h1{font-size:34px}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+ <div class="logo"><div class="logo-mark">⌘</div><div><strong>COMMAND AI</strong><small>LOCAL CONTROL DESK</small></div></div>
+ <div class="nav-wrap"><div class="side-label">WORKSPACE</div><nav class="nav" id="nav">
+  <button class="active" data-cat="all"><span>◈</span> All commands</button>
+  <button data-cat="system"><span>▣</span> System tools</button>
+  <button data-cat="files"><span>▤</span> File studio</button>
+  <button data-cat="text"><span>✎</span> Text lab</button>
+  <button data-cat="math"><span>∑</span> Math engine</button>
+  <button data-cat="time"><span>◷</span> Time tools</button>
+  <button data-cat="network"><span>⌁</span> Network lab</button>
+  <button data-cat="web"><span>◎</span> Web utilities</button>
+  <button data-cat="dev"><span>⌘</span> Developer kit</button>
+  <button data-cat="design"><span>◇</span> Design desk</button>
+  <button data-cat="games"><span>♧</span> Fun & games</button>
+  <button data-cat="productivity"><span>▦</span> Productivity</button>
+  <button data-cat="ai"><span>✧</span> AI assistant</button>
+  <button id="settingsNav" type="button"><span>⚙</span> Settings</button>
+ </nav></div>
+ <div class="side-bottom"><div class="live">● ALL SYSTEMS NOMINAL</div><p>Command AI runs locally in your browser. No account, server, or installation required.</p></div>
+</aside>
+<main>
+ <div class="topbar"><div class="crumb">Workspace / <b id="crumb">All commands</b></div><div class="top-actions"><div class="chip"><span class="online-dot"></span>LOCAL MODE</div><div class="chip">v2.6.1 · BROWSER</div><button class="top-settings" id="settingsTopBtn" type="button" aria-label="Open settings">⚙ <span data-i18n="settingsShortcut">Settings</span></button></div></div>
+ <section class="hero"><div><div class="eyebrow">YOUR PERSONAL COMMAND ENVIRONMENT</div><h1>Make something happen.</h1><p>A compact command universe with tools for text, math, files, design, development and more. Search a command or run it directly.</p></div><div class="countbox"><strong id="totalCount">361</strong><span>AVAILABLE COMMANDS</span></div></section>
+ <div class="commandbar"><span class="prompt">›</span><input id="commandInput" autocomplete="off" spellcheck="false" placeholder="Type a command… e.g. ai.ask hello there"><button class="run" id="runBtn" type="button">RUN ↗</button></div>
+ <section class="workspace">
+  <div class="terminal"><div class="term-head"><div class="term-title">⌘ &nbsp; OUTPUT CONSOLE</div><div class="term-lights"><i></i><i></i><i></i></div></div><div class="term-body" id="terminal"><div class="line"><span class="ok">COMMAND AI v2.6.1</span> — local command engine initialized.</div><div class="line"><span class="dim">Tip: type “help” to explore, or tap any command card.</span></div><div class="line"><span class="dim">────────────────────────────────────────────────────</span></div></div></div>
+  <aside class="helpbox"><h3>Quick start</h3><p>Choose a command from the library, or type its name in the command bar. Some commands accept extra text after the name. This is a local demo engine: it does not connect to the internet or control your device.</p><div class="examples"><button data-example="help">help</button><button data-example="ai.ask Tell me a fun fact">ai.ask</button><button data-example="text.upper hello world">text.upper</button><button data-example="math.random">math.random</button><button data-example="system.about">system.about</button></div></aside>
+ </section>
+ <section class="stats">
+  <div class="stat"><small>COMMAND LIBRARY</small><strong id="statCommands">361 <em>ready</em></strong></div>
+  <div class="stat"><small>COMMAND GROUPS</small><strong>12 <em>modules</em></strong></div>
+  <div class="stat"><small>RUNS THIS SESSION</small><strong id="runCount">0</strong></div>
+  <div class="stat"><small>DISCOVERED</small><strong id="visibleCount">361</strong></div>
+ </section>
+ <div class="section-head" id="librarySection"><h2>Command library</h2><span id="resultLabel">Showing 361 commands</span></div>
+ <div class="filters" id="filters"></div>
+ <section class="grid" id="commandGrid"></section>
+
+
+ <section id="settingsPage" class="settings-page" hidden>
+  <div class="settings-heading"><div><div class="eyebrow" data-i18n="settingsEyebrow">PERSONALIZE YOUR WORKSPACE</div><h2 data-i18n="settingsTitle">Settings</h2><p data-i18n="settingsDesc">Tune the look and language of your command environment.</p></div><button class="back-btn" id="backWorkspace" type="button" data-i18n="backWorkspace">← Back to workspace</button></div>
+  <div class="settings-grid">
+   <article class="setting-card"><div class="setting-icon">◐</div><div><h3 data-i18n="appearanceTitle">Appearance</h3><p data-i18n="appearanceDesc">Switch between a calm night workspace and a bright day workspace.</p></div>
+    <div class="setting-options"><button class="choice active" data-mode-choice="night"><span>☾</span><b data-i18n="night">Night</b><small data-i18n="nightDesc">Dark background</small></button><button class="choice" data-mode-choice="day"><span>☀</span><b data-i18n="day">Day</b><small data-i18n="dayDesc">Light background</small></button></div>
+   </article>
+   <article class="setting-card"><div class="setting-icon">◈</div><div><h3 data-i18n="themeTitle">UI color theme</h3><p data-i18n="themeDesc">Choose an accent color. The entire interface will adapt.</p></div>
+    <div class="swatches">
+     <button class="swatch active" data-theme="brown" aria-label="Brown"><i style="--sw:#b98a62"></i><span>🟫</span><small data-i18n="brown">Brown</small></button>
+     <button class="swatch" data-theme="purple" aria-label="Purple"><i style="--sw:#bd91f5"></i><span>🟪</span><small data-i18n="purple">Purple</small></button>
+     <button class="swatch" data-theme="blue" aria-label="Blue"><i style="--sw:#83b8ff"></i><span>🟦</span><small data-i18n="blue">Blue</small></button>
+     <button class="swatch" data-theme="green" aria-label="Green"><i style="--sw:#80d6a5"></i><span>🟩</span><small data-i18n="green">Green</small></button>
+     <button class="swatch" data-theme="yellow" aria-label="Yellow"><i style="--sw:#edcf73"></i><span>🟨</span><small data-i18n="yellow">Yellow</small></button>
+     <button class="swatch" data-theme="orange" aria-label="Orange"><i style="--sw:#f0a46b"></i><span>🟧</span><small data-i18n="orange">Orange</small></button>
+     <button class="swatch" data-theme="red" aria-label="Red"><i style="--sw:#f1848e"></i><span>🟥</span><small data-i18n="red">Red</small></button>
+    </div>
+   </article>
+   <article class="setting-card"><div class="setting-icon">文</div><div><h3 data-i18n="languageTitle">Language</h3><p data-i18n="languageDesc">Translate the interface and command responses. Command names always stay in English.</p></div>
+    <div class="language-options"><button class="choice active" data-language="en"><b>English</b><small>English interface</small></button><button class="choice" data-language="fa"><b>فارسی</b><small>رابط فارسی روان</small></button></div>
+   </article>
+   <article class="setting-card ai-special"><div class="setting-icon">✧</div><div><h3 data-i18n="aiThemeTitle">AI signature theme</h3><p data-i18n="aiThemeDesc">AI tools have their own luminous identity with a violet-to-cyan glow, separate from your selected UI accent.</p></div><div class="ai-preview"><span>✧</span><b>COMMAND AI</b><small>NEURAL INTERFACE · SPECIAL MODULE</small></div></article>
+  </div>
+  <div class="settings-foot" data-i18n="settingsFoot">Your preferences apply instantly and are saved when browser storage is available.</div>
+ </section>
+
+</main>
+</div>
+<div class="toast" id="toast">Command executed</div>
+<script>
+const modules = [
+["system","System tools","System overview and browser environment utilities",["about","status","version","info","diagnostics","health","uptime","environment","capabilities","memory","cpu","display","battery","language","timezone","platform","browser","screen","orientation","online","permissions","preferences","theme","notifications","sound","clipboard","fullscreen","reload","help","manual"]],
+["files","File studio","Work with names, extensions, sizes and file concepts",["list","inspect","metadata","extension","basename","dirname","join","split","sanitize","slug","filename","type","mime","size","units","tree","pathinfo","format","template","notes","draft","exporthint","importhint","backupplan","organize","sort","filter","search","renamehint","about"]],
+["text","Text lab","Useful text transformations and writing helpers",["upper","lower","title","sentence","reverse","length","words","chars","lines","trim","clean","collapse","duplicate","unique","sort","shuffle","count","find","replace","prefix","suffix","quote","unquote","slug","camel","snake","kebab","initials","acronym","lorem"]],
+["math","Math engine","Everyday calculations and number utilities",["add","subtract","multiply","divide","power","sqrt","square","cube","abs","round","floor","ceil","factorial","percent","average","median","min","max","sum","range","random","even","odd","prime","gcd","lcm","convert","binary","hex","roman"]],
+["time","Time tools","Date, calendar and duration helpers",["now","today","tomorrow","yesterday","year","month","day","weekday","daysinmonth","leapyear","timestamp","iso","utc","unix","stopwatchhint","timerhint","duration","seconds","minutes","hours","days","weeks","adddays","dategap","calendar","season","zodiac","format","greeting","worldclock"]],
+["network","Network lab","Safe, local explanations and connection diagnostics",["status","latencyinfo","ipinfo","dnsinfo","httpsinfo","urlparse","urlencode","urldecode","base64encode","base64decode","hashinfo","headersinfo","portsinfo","protocols","pingguide","tracerouteguide","downloadguide","uploadguide","bandwidth","connectivity","securecheck","privacytips","cookieinfo","cacheinfo","proxyinfo","firewallinfo","wifitips","qrtext","shortlinkhint","about"]],
+["web","Web utilities","Browser-side helpers for common web tasks",["searchtips","htmlencode","htmldecode","escape","unescape","markdown","jsonformat","jsonminify","jsonvalidate","csscolor","gradient","contrast","loremhtml","metatags","viewport","faviconhint","opengraph","robotsinfo","sitemapinfo","canonical","linkcheckhint","regexhint","wordcount","readtime","pixelratio","breakpoints","useragent","localstorageinfo","sessioninfo","about"]],
+["dev","Developer kit","Small coding references and developer helpers",["htmlstarter","cssstarter","jsstarter","jsonsample","regexemail","regexurl","regexdigits","uuid","ulidinfo","semver","gitinit","gitstatus","gitbranch","gitcommit","gitlog","npmstart","npmrun","pythonhello","consolelog","comment","todo","indent","dedent","brackets","escapejs","unescapejs","urlparse","httpcodes","ascii","unicode","about"]],
+["design","Design desk","Color, layout and interface inspiration",["palette","randomcolor","hexrgb","rgbhex","hslinfo","gradient","shadow","radius","spacing","typeScale","fontpair","layout","grid","flex","glass","neumorph","wireframe","iconideas","logoideas","buttonideas","cardideas","dashboard","mobilefirst","darkmode","lightmode","contrast","accessibility","animation","easing","about"]],
+["games","Fun & games","Tiny diversions and playful generators",["coin","dice","rps","number","guess","fortune","eightball","joke","riddle","answer","story","name","planet","constellation","quest","treasure","mazehint","memoryhint","reactionhint","sequence","pattern","choose","wouldyourather","trivia","fact","compliment"," haiku","emoji","adventure","about"]],
+["productivity","Productivity","Planning, focus and personal organization",["task","checklist","priority","plan","focus","pomodoro","break","meeting","agenda","goal","habit","journal","gratitude","brainstorm","decision","proscons","outline","summarytips","emaildraft","replydraft","presentation","studyplan","revision","deadline","estimate","schedule","routine","motivation","dailyreview","about"]],
+["ai","AI assistant","A local assistant-style set of prompts and thinking tools",["ask","explain","summarize","simplify","expand","ideas","brainstorm","outline","rewrite","proofread","tone","translatehint","teach","quiz","flashcards","analogy","proscons","steps","debughint","codehint","prompt","role","critic","compare","recommend","plan","creative","poem","story","about"]]
+];
+const descriptions = {
+about:"Show information about this module.",status:"Display a quick status report.",help:"Show usage instructions and popular commands.",random:"Generate a random value.",now:"Show the current local date and time.",today:"Display today's date.",upper:"Convert supplied text to uppercase.",lower:"Convert supplied text to lowercase.",title:"Convert text to title case.",reverse:"Reverse the supplied text.",length:"Count characters in supplied text.",words:"Count words in supplied text.",slug:"Turn text into a URL-friendly slug.",add:"Add two or more numbers.",subtract:"Subtract the second number from the first.",multiply:"Multiply two or more numbers.",divide:"Divide the first number by the second.",average:"Calculate the average of supplied numbers.",percent:"Calculate a percentage.",coin:"Flip a virtual coin.",dice:"Roll a six-sided die.",joke:"Tell a small, family-friendly joke.",fortune:"Generate a playful fortune.",ask:"Respond with a local demo assistant message.",explain:"Give a short explanation prompt template.",palette:"Generate a color palette.",uuid:"Generate a random identifier.",jsonformat:"Format JSON supplied after the command.",base64encode:"Encode supplied text as Base64.",base64decode:"Decode Base64 text.",greeting:"Show a greeting for the current time.",calendar:"Show a compact calendar overview.",task:"Create a temporary task note in the output.",plan:"Generate a simple planning structure."
+};
+const icons={system:"▣",files:"▤",text:"✎",math:"∑",time:"◷",network:"⌁",web:"◎",dev:"⌘",design:"◇",games:"♧",productivity:"▦",ai:"✧"};
+let allCommands=[],activeCategory="all",runs=0;
+for(const [cat,label,desc,names] of modules){names.forEach((name,i)=>{let clean=name.trim();let commandName=clean.toLowerCase();allCommands.push({id:cat+"."+commandName,cat,label,name:clean,desc:descriptions[clean]||`${clean.replace(/([A-Z])/g," $1")} utility in the ${label.toLowerCase()} module. Run it to see a practical example or quick reference.`})})}
+document.getElementById("totalCount").textContent=allCommands.length;
+document.getElementById("statCommands").innerHTML=allCommands.length+' <em>ready</em>';
+document.getElementById("visibleCount").textContent=allCommands.length;
+const filters=document.getElementById("filters"),grid=document.getElementById("commandGrid");
+function makeFilters(){filters.innerHTML="";const list=[["all","All commands"],...modules.map(m=>[m[0],m[1]])];list.forEach(([id,label])=>{let b=document.createElement("button");b.className="filter"+(id===activeCategory?" active":"");b.textContent=label;b.onclick=()=>setCategory(id);filters.appendChild(b)})}
+function setCategory(cat){
+ if(cat!=="all"&&!modules.some(m=>m[0]===cat))return;
+ activeCategory=cat;
+ document.querySelectorAll("#nav button[data-cat]").forEach(b=>b.classList.toggle("active",b.dataset.cat===cat));
+ const crumbKey=cat==="all"?"All commands":modules.find(m=>m[0]===cat)[1];
+ updateCrumb(crumbKey);
+ render();makeFilters();
+}
+function render(){
+ const q=document.getElementById("commandInput").value.trim().toLowerCase();
+ const list=allCommands.filter(c=>(activeCategory==="all"||c.cat===activeCategory)&&(!q||c.id.toLowerCase().includes(q)||c.desc.toLowerCase().includes(q)));
+ grid.innerHTML="";
+ if(!list.length){
+  const empty=document.createElement("p");
+  empty.className="empty-state";
+  empty.textContent=uiLanguage==="fa"?"فرمانی پیدا نشد؛ عبارت دیگری را جست‌وجو کنید.":"No matching commands. Try a different search.";
+  grid.appendChild(empty);
+ }
+ list.forEach(c=>{
+  const el=document.createElement("article");el.className="cmd";el.dataset.cat=c.cat;
+  el.innerHTML=`<div class="cmd-top"><code>${c.id}</code><span class="arrow">↗</span></div><p>${uiLanguage==="fa"?(translations.fa[c.desc]||({about:"نمایش اطلاعات این بخش.",status:"نمایش وضعیت فعلی.",help:"نمایش راهنمای استفاده."}[c.name]||"ابزار "+c.name+" در بخش "+tr(c.label)+"؛ برای دیدن نمونه آن را اجرا کنید.")):c.desc}</p><div class="cmd-foot"><span class="tag">${icons[c.cat]} ${tr(c.label)}</span><span class="try">${uiLanguage==="fa"?"اجرای فرمان":"RUN COMMAND"}</span></div>`;
+  el.addEventListener("click",()=>runCommand(c.id));grid.appendChild(el);
+ });
+ document.getElementById("resultLabel").textContent=uiLanguage==="fa"?`نمایش ${list.length} از ${allCommands.length} فرمان`:`Showing ${list.length} of ${allCommands.length} commands`;
+ document.getElementById("visibleCount").textContent=list.length;
+}
+function out(html){if(uiLanguage==="fa"){const plain=document.createElement("div");plain.innerHTML=html;let raw=plain.textContent||"";raw=raw.replace("COMMAND AI HELP","راهنمای COMMAND AI").replace("Command not found.","فرمان پیدا نشد.").replace("Try “help” or search the command library.","help را امتحان کنید یا در کتابخانه فرمان‌ها جست‌وجو کنید.").replace("Valid JSON ✓","JSON معتبر است ✓").replace("Cannot divide by zero.","تقسیم بر صفر امکان‌پذیر نیست.").replace("No extension found.","پسوندی پیدا نشد.").replace("Good morning.","صبح بخیر.").replace("Good afternoon.","ظهر بخیر.").replace("Good evening.","عصر بخیر.").replace("A piano.","پیانو.").replace("COMMAND AI v2.6.1","COMMAND AI نسخه ۲.۶.۰").replace("commands available.","فرمان در دسترس است.").replace("Categories:","دسته‌ها:").replace("Status: OPERATIONAL","وضعیت: فعال").replace(" · Runtime: browser · External connection: not required · Command registry:"," · محیط اجرا: مرورگر · اتصال خارجی: لازم نیست · تعداد فرمان‌ها:").replace(" (random integer from 1 to 100)"," (عدد تصادفی بین ۱ تا ۱۰۰)").replace("random integer from 1 to 100","عدد تصادفی بین ۱ تا ۱۰۰").replace(" characters · "," نویسه · ").replace(" words"," واژه").replace("Word count:","تعداد واژه‌ها:").replace("Occurrences of each character:","تعداد تکرار هر نویسه:").replace("You rolled a ","عدد تاس شما: ").replace("Computer chose ","انتخاب رایانه: ").replace(". Play again!"," . دوباره بازی کنید!").replace("A small discovery will brighten your day.","یک کشف کوچک روزتان را روشن می‌کند.").replace("The best idea arrives after a short break.","بهترین ایده پس از استراحتی کوتاه از راه می‌رسد.").replace("Try the door you have been walking past.","دری را امتحان کنید که همیشه از کنارش می‌گذرید.").replace("Curiosity is your secret superpower.","کنجکاوی، قدرت ویژه شماست.");html=esc(raw).replace(/راهنمای COMMAND AI/,'<span class="ok">راهنمای COMMAND AI</span>')}let t=document.getElementById("terminal"),d=document.createElement("div");d.className="line";d.innerHTML=html;t.appendChild(d);t.scrollTop=t.scrollHeight}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function runCommand(raw){let input=raw.trim();if(!input)return;let parts=input.split(/\s+/),id=parts.shift().toLowerCase(),arg=parts.join(" ");out(`<span class="dim">› ${esc(input)}</span>`);runs++;document.getElementById("runCount").textContent=runs;
+let c=allCommands.find(x=>x.id===id);
+if(id==="help"){out(`<span class="ok">COMMAND AI HELP</span> — ${uiLanguage==="fa"?`${allCommands.length} فرمان در ۱۲ بخش. جست‌وجو کنید، یک کارت را انتخاب کنید یا module.command را بنویسید. نمونه‌ها: text.upper hello · math.add 2 3 · ai.ask tell me a story`:`${allCommands.length} commands across 12 modules. Use search, tap a card, or type module.command. Examples: text.upper hello · math.add 2 3 · ai.ask tell me a story`}`);return}
+if(id==="clear"){const term=document.getElementById("terminal");term.replaceChildren();const line=document.createElement("div");line.className="line";line.textContent=uiLanguage==="fa"?"کنسول پاک شد.":"Console cleared.";term.appendChild(line);return}
+if(id==="list"||id==="commands"){out(`<span class="ok">${allCommands.length} commands available.</span> Categories: ${modules.map(m=>m[0]).join(", ")}.`);return}
+if(!c){out(`<span class="warn">Command not found.</span> Try “help” or search the command library.`);return}
+let result="";
+const words=arg.split(/\s+/).filter(Boolean),nums=words.map(Number);
+switch(id){
+case "system.about":result="COMMAND AI v2.6.1 — a self-contained browser command playground. All operations run locally in this page.";break;
+case "system.status":case "network.status":result="Status: OPERATIONAL · Runtime: browser · External connection: not required · Command registry: "+allCommands.length+" entries.";break;
+case "system.version":result="COMMAND AI / 2.6.1 / local-web build.";break;
+case "system.browser":result=navigator.userAgent;break;
+case "system.platform":result=navigator.platform||"Platform unavailable";break;
+case "system.language":result=navigator.language;break;
+case "system.timezone":result=Intl.DateTimeFormat().resolvedOptions().timeZone;break;
+case "system.screen":result=`Viewport ${innerWidth} × ${innerHeight}px · Pixel ratio ${devicePixelRatio}`;break;
+case "system.online":result=navigator.onLine?"Browser reports an internet connection is available.":"Browser reports offline mode.";break;
+case "system.theme":result=`Interface theme: ${uiMode} mode · ${uiTheme} accent.`;break;
+case "text.upper":result=arg.toUpperCase()||"Usage: text.upper your text";break;
+case "text.lower":result=arg.toLowerCase()||"Usage: text.lower your text";break;
+case "text.title":result=arg.replace(/\b\w/g,x=>x.toUpperCase())||"Usage: text.title your text";break;
+case "text.sentence":result=arg?arg.charAt(0).toUpperCase()+arg.slice(1).toLowerCase():"Usage: text.sentence your text";break;
+case "text.reverse":result=arg.split("").reverse().join("")||"Usage: text.reverse your text";break;
+case "text.length":result=`${arg.length} characters · ${arg.trim()?arg.trim().split(/\s+/).length:0} words`;break;
+case "text.words":result=`Word count: ${arg.trim()?arg.trim().split(/\s+/).length:0}`;break;
+case "text.chars":result=`Characters including spaces: ${arg.length}`;break;
+case "text.trim":result=arg.trim()||"No text supplied.";break;
+case "text.slug":result=arg.toLowerCase().trim().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")||"Usage: text.slug Your title";break;
+case "text.camel":result=arg.toLowerCase().replace(/[^a-z0-9 ]/g,"").replace(/ (.)/g,(_,x)=>x.toUpperCase());break;
+case "text.snake":result=arg.toLowerCase().trim().replace(/[^a-z0-9]+/g,"_");break;
+case "text.kebab":result=arg.toLowerCase().trim().replace(/[^a-z0-9]+/g,"-");break;
+case "text.initials":result=arg.trim().split(/\s+/).map(w=>w[0]?.toUpperCase()).join("")||"Usage: text.initials Ada Lovelace";break;
+case "text.count":result=`Occurrences of each character:\n${[...new Set(arg)].map(ch=>`${JSON.stringify(ch)}: ${arg.split(ch).length-1}`).join(" · ")}`;break;
+case "math.add":case "math.sum":result=nums.length>=2?nums.reduce((a,b)=>a+b,0):"Usage: math.add 12 8 3";break;
+case "math.subtract":result=nums.length>=2?nums.slice(1).reduce((a,b)=>a-b,nums[0]):"Usage: math.subtract 10 4";break;
+case "math.multiply":result=nums.length>=2?nums.reduce((a,b)=>a*b,1):"Usage: math.multiply 3 4 2";break;
+case "math.divide":result=nums.length>=2?(nums.slice(1).includes(0)?"Cannot divide by zero.":nums.slice(1).reduce((a,b)=>a/b,nums[0])):"Usage: math.divide 20 4";break;
+case "math.power":result=nums.length>=2?Math.pow(nums[0],nums[1]):"Usage: math.power 2 8";break;
+case "math.sqrt":result=nums.length?Math.sqrt(nums[0]):"Usage: math.sqrt 81";break;
+case "math.square":result=nums.length?nums[0]**2:"Usage: math.square 9";break;
+case "math.cube":result=nums.length?nums[0]**3:"Usage: math.cube 3";break;
+case "math.abs":result=nums.length?Math.abs(nums[0]):"Usage: math.abs -42";break;
+case "math.round":result=nums.length?Math.round(nums[0]):"Usage: math.round 3.7";break;
+case "math.floor":result=nums.length?Math.floor(nums[0]):"Usage: math.floor 3.7";break;
+case "math.ceil":result=nums.length?Math.ceil(nums[0]):"Usage: math.ceil 3.2";break;
+case "math.average":result=nums.length?nums.reduce((a,b)=>a+b,0)/nums.length:"Usage: math.average 2 4 6";break;
+case "math.min":result=nums.length?Math.min(...nums):"Usage: math.min 5 2 9";break;
+case "math.max":result=nums.length?Math.max(...nums):"Usage: math.max 5 2 9";break;
+case "math.random":result=Math.floor(Math.random()*100)+1+" (random integer from 1 to 100)";break;
+case "math.even":result=nums.length?(nums[0]%2===0?"Even":"Odd"):"Usage: math.even 14";break;
+case "math.odd":result=nums.length?(Math.abs(nums[0]%2)===1?"Odd":"Even"):"Usage: math.odd 14";break;
+case "math.binary":result=nums.length?Math.trunc(nums[0]).toString(2):"Usage: math.binary 42";break;
+case "math.hex":result=nums.length?Math.trunc(nums[0]).toString(16).toUpperCase():"Usage: math.hex 255";break;
+case "time.now":case "time.today":result=new Date().toString();break;
+case "time.tomorrow":{let d=new Date();d.setDate(d.getDate()+1);result=d.toDateString();break}
+case "time.yesterday":{let d=new Date();d.setDate(d.getDate()-1);result=d.toDateString();break}
+case "time.year":result=new Date().getFullYear();break;
+case "time.month":result=new Intl.DateTimeFormat(undefined,{month:"long"}).format(new Date());break;
+case "time.weekday":result=new Intl.DateTimeFormat(undefined,{weekday:"long"}).format(new Date());break;
+case "time.leapyear":{let y=Number(arg)||new Date().getFullYear();result=`${y} is ${((y%4===0&&y%100!==0)||y%400===0)?"a leap year":"not a leap year"}.`;break}
+case "time.iso":result=new Date().toISOString();break;
+case "time.unix":result=Math.floor(Date.now()/1000);break;
+case "time.greeting":{let h=new Date().getHours();result=h<12?"Good morning.":h<18?"Good afternoon.":"Good evening.";break}
+case "games.coin":result=Math.random()<.5?"Heads ✦":"Tails ◇";break;
+case "games.dice":result="You rolled a "+(Math.floor(Math.random()*6)+1)+".";break;
+case "games.rps":result="Computer chose "+["rock","paper","scissors"][Math.floor(Math.random()*3)]+". Play again!";break;
+case "games.fortune":result=["A small discovery will brighten your day.","The best idea arrives after a short break.","Try the door you have been walking past.","Curiosity is your secret superpower."][Math.floor(Math.random()*4)];break;
+case "games.eightball":result=["Absolutely.","The signs look good.","Ask again after a snack.","Probably not.","A surprising yes."][Math.floor(Math.random()*5)];break;
+case "games.joke":result="Why did the computer go to the doctor? It had a virus. (It recovered after a byte.)";break;
+case "games.riddle":result="What has keys but cannot open locks?";break;
+case "games.answer":result="A piano. 🎹";break;
+case "games.haiku":result="Soft stars cross the sky / Quiet circuits dream in blue / Dawn waits at the door";break;
+case "ai.ask":result=arg?(uiLanguage==="fa"?`درخواست شما دریافت شد: «${arg}»\n\nاین نسخه نمایشی به‌صورت آفلاین اجرا می‌شود و به مدل هوش مصنوعی آنلاین متصل نیست. در نسخه متصل، دستیار می‌تواند در توضیح مفاهیم، ایده‌پردازی و نوشتن متن کمک کند.`:`Local assistant demo received: “${arg}”\n\nI can help organize ideas, explain concepts, and draft text in a connected AI version. This offline demo does not call a remote AI model.`):(uiLanguage==="fa"?"روش استفاده: ai.ask درباره باغ ماه داستان کوتاهی بنویس":"Usage: ai.ask write a short story about a moon garden");break;
+case "ai.explain":result=arg?(uiLanguage==="fa"?`موضوع درخواستی برای توضیح: ${arg}\n\nبرای نتیجه بهتر، می‌توانید عبارت «به زبان ساده و همراه با مثال» را هم اضافه کنید.`:`Explanation request: ${arg}\n\nTip: add “in simple terms” or “with an example” to make the request more specific.`):(uiLanguage==="fa"?"روش استفاده: ai.explain سیاه‌چاله‌ها":"Usage: ai.explain black holes");break;
+case "ai.ideas":case "ai.brainstorm":result="Try these directions:\n1. Make it smaller and more focused.\n2. Combine it with an unexpected subject.\n3. Turn it into an interactive experience.\n4. Add a constraint that changes the rules.\n5. Build a tiny prototype first.";break;
+case "ai.prompt":result="Prompt framework: Role + Goal + Context + Constraints + Output format. Example: “Act as a patient tutor. Explain fractions to a beginner using 3 examples.”";break;
+case "ai.poem":result="A window full of midnight blue,\nA thousand lights come drifting through;\nThe world is wide, the night is kind,\nNew little worlds are yours to find.";break;
+case "design.randomcolor":{let n=Math.floor(Math.random()*16777215).toString(16).padStart(6,"0");result="#"+n.toUpperCase();break}
+case "design.palette":{let hue=Math.floor(Math.random()*360);result=[0,35,180,215,300].map((v,i)=>`Color ${i+1}: hsl(${(hue+v)%360} 55%  ${[58,48,68,38,78][i]}%)`).join("\n");break}
+case "dev.uuid":result=crypto.randomUUID?crypto.randomUUID():"xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g,c=>{let r=Math.random()*16|0;return(c==="x"?r:(r&3|8)).toString(16)});break;
+case "web.jsonformat":try{result=JSON.stringify(JSON.parse(arg),null,2)}catch(e){result="Usage: web.jsonformat {\"name\":\"Ada\",\"active\":true}";}break;
+case "web.jsonvalidate":try{JSON.parse(arg);result="Valid JSON ✓"}catch(e){result="Invalid JSON: "+e.message}break;
+case "network.urlencode":result=encodeURIComponent(arg);break;
+case "network.urldecode":try{result=decodeURIComponent(arg)}catch(e){result="Could not decode this text."}break;
+case "network.base64encode":result=btoa(unescape(encodeURIComponent(arg)))||"Usage: network.base64encode hello";break;
+case "network.base64decode":try{result=decodeURIComponent(escape(atob(arg)))}catch(e){result="Usage: network.base64decode SGVsbG8="}break;
+case "productivity.plan":result="QUICK PLAN\n1. Define the outcome.\n2. Pick the smallest useful first step.\n3. Set a realistic time block.\n4. Remove one distraction.\n5. Review what worked.";break;
+case "productivity.checklist":result=(arg||"Example task").split(",").map((x,i)=>`□ ${i+1}. ${x.trim()}`).join("\n");break;
+case "productivity.focus":result="FOCUS SESSION\nChoose one task · Silence distractions · Work for 20 minutes · Take a short screen break.";break;
+case "productivity.brainstorm":result="Write the goal in one sentence. Generate 10 ideas without judging them. Circle the most surprising one. Prototype it in 15 minutes.";break;
+case "files.extension":{let f=arg.split(/[\\/]/).pop()||"";result=f.includes(".")?f.split(".").pop():"No extension found.";break}
+case "files.basename":result=arg.split(/[\\/]/).pop()||"Usage: files.basename /folder/example.txt";break;
+case "files.slug":result=arg.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");break;
+case "web.htmlencode":result=esc(arg);break;
+case "web.htmldecode":{let t=document.createElement("textarea");t.innerHTML=arg;result=t.value;break}
+case "web.wordcount":result=`${arg.trim()?arg.trim().split(/\s+/).length:0} words`;break;
+case "dev.ascii":result=arg.split("").map(ch=>`${ch}: ${ch.charCodeAt(0)}`).join("\n")||"Usage: dev.ascii ABC";break;
+case "dev.httpcodes":result="200 OK · 301 Moved Permanently · 400 Bad Request · 401 Unauthorized · 403 Forbidden · 404 Not Found · 500 Internal Server Error";break;
+case "design.contrast":result="Accessibility tip: use a contrast checker and aim for WCAG AA (4.5:1 for normal text). This demo does not measure a supplied color pair.";break;
+default:result=uiLanguage==="fa"?`${c.id}\n\nاین فرمان در بخش «${tr(c.label)}» قرار دارد. ${c.desc}\n\nاین مورد یک ابزار راهنما یا نمونه تعاملی است و لزوماً عملیاتی روی سیستم‌عامل انجام نمی‌دهد. برای راهنمایی بیشتر help را اجرا کنید.`:`${c.id}\n\n${c.desc}\n\nThis command is part of the ${c.label} module. Some library entries are interactive reference/demo commands rather than full operating-system actions. Try a more specific command or type “help”.`;
+}
+out(`<span class="ok">✓ ${esc(c.id)}</span>\n${esc(result)}`);
+}
+document.getElementById("runBtn").onclick=()=>{const input=document.getElementById("commandInput");runCommand(input.value);input.value="";render()};
+document.getElementById("commandInput").addEventListener("keydown",e=>{if(e.key==="Enter"){document.getElementById("runBtn").click()}else if(e.key==="Escape"){e.target.value="";render()}});
+document.getElementById("commandInput").addEventListener("input",render);
+document.querySelectorAll("#nav button[data-cat]").forEach(b=>b.onclick=()=>setCategory(b.dataset.cat));
+document.querySelectorAll("[data-example]").forEach(b=>b.onclick=()=>{const input=document.getElementById("commandInput");input.value=b.dataset.example;runCommand(b.dataset.example);render()});
+// Initial rendering is deliberately deferred until preferences and translations are initialized.
+
+// --- Preferences, Persian localization and command response language ---
+const translations={
+ fa:{
+  "All commands":"همه فرمان‌ها","System tools":"ابزارهای سیستم","File studio":"استودیوی فایل","Text lab":"آزمایشگاه متن","Math engine":"موتور ریاضی","Time tools":"ابزارهای زمان","Network lab":"آزمایشگاه شبکه","Web utilities":"ابزارهای وب","Developer kit":"جعبه‌ابزار توسعه‌دهنده","Design desk":"میز طراحی","Fun & games":"سرگرمی و بازی","Productivity":"بهره‌وری","AI assistant":"دستیار هوش مصنوعی","Settings":"تنظیمات","settingsShortcut":"تنظیمات",
+  "WORKSPACE":"محیط کار","LOCAL MODE":"حالت محلی","YOUR PERSONAL COMMAND ENVIRONMENT":"محیط فرمان شخصی شما","Make something happen.":"کاری را به انجام برسانید.","A compact command universe with tools for text, math, files, design, development and more. Search a command or run it directly.":"مجموعه‌ای از ابزارهای متن، ریاضی، فایل، طراحی، برنامه‌نویسی و موارد دیگر. فرمان موردنظرتان را جست‌وجو کنید یا مستقیم اجرا کنید.",
+  "COMMAND LIBRARY":"کتابخانه فرمان‌ها","COMMAND GROUPS":"گروه فرمان‌ها","RUNS THIS SESSION":"اجراهای این نشست","DISCOVERED":"نمایش داده‌شده","Command library":"کتابخانه فرمان‌ها","Showing":"نمایش","commands":"فرمان","of":"از","OUTPUT CONSOLE":"خروجی فرمان","Quick start":"شروع سریع","Choose a command from the library, or type its name in the command bar. Some commands accept extra text after the name. This is a local demo engine: it does not connect to the internet or control your device.":"یک فرمان انتخاب کنید یا نام آن را در کادر فرمان بنویسید. برخی فرمان‌ها پس از نام خود متن ورودی می‌پذیرند. این نسخه به اینترنت متصل نمی‌شود و دستگاه شما را کنترل نمی‌کند.",
+  "Type a command… e.g. ai.ask hello there":"یک فرمان بنویسید… مثلاً ai.ask hello there","RUN ↗":"اجرا ↗","PERSONALIZE YOUR WORKSPACE":"شخصی‌سازی محیط کار","Settings":"تنظیمات","settingsShortcut":"تنظیمات","Tune the look and language of your command environment.":"ظاهر و زبان محیط فرمان را تنظیم کنید.","← Back to workspace":"← بازگشت به محیط کار","Appearance":"نمای ظاهری","Switch between a calm night workspace and a bright day workspace.":"بین محیط شب آرام و محیط روز روشن جابه‌جا شوید.","Night":"شب","Dark background":"پس‌زمینه تیره","Day":"روز","Light background":"پس‌زمینه روشن","UI color theme":"رنگ‌بندی رابط کاربری","Choose an accent color. The entire interface will adapt.":"رنگ موردعلاقه‌تان را انتخاب کنید؛ تمام رابط کاربری با آن هماهنگ می‌شود.","Brown":"قهوه‌ای","Purple":"بنفش","Blue":"آبی","Green":"سبز","Yellow":"زرد","Orange":"نارنجی","Red":"قرمز","Language":"زبان","Translate the interface and command responses. Command names always stay in English.":"زبان رابط و پاسخ فرمان‌ها را تغییر دهید. نام فرمان‌ها همیشه انگلیسی باقی می‌ماند.","AI signature theme":"تم اختصاصی هوش مصنوعی","AI tools have their own luminous identity with a violet-to-cyan glow, separate from your selected UI accent.":"ابزارهای هوش مصنوعی ظاهر اختصاصی بنفش تا فیروزه‌ای دارند و مستقل از رنگ انتخابی شما هستند.","Your preferences apply instantly and are saved when browser storage is available.":"تنظیمات بلافاصله اعمال می‌شوند و در صورت پشتیبانی مرورگر ذخیره خواهند شد.",
+  "All systems nominal":"همه سامانه‌ها فعال‌اند","LOCAL CONTROL DESK":"میز کنترل محلی","ready":"آماده","modules":"ماژول","Tip: type “help” to explore, or tap any command card.":"راهنما: برای دیدن راهنما help را بنویسید یا یکی از کارت‌های فرمان را انتخاب کنید.","Command not found.":"فرمان پیدا نشد.","Try “help” or search the command library.":"help را امتحان کنید یا در کتابخانه فرمان‌ها جست‌وجو کنید.","Valid JSON ✓":"JSON معتبر است ✓","Invalid JSON:":"JSON نامعتبر است:","Cannot divide by zero.":"تقسیم بر صفر امکان‌پذیر نیست.","Good morning.":"صبح بخیر.","Good afternoon.":"ظهر بخیر.","Good evening.":"عصر بخیر.","Heads ✦":"شیر ✦","Tails ◇":"خط ◇","A piano. 🎹":"پیانو. 🎹","Status: OPERATIONAL":"وضعیت: فعال","Browser reports an internet connection is available.":"مرورگر اعلام می‌کند اتصال اینترنت در دسترس است.","Browser reports offline mode.":"مرورگر در حالت آفلاین است.","No extension found.":"پسوندی پیدا نشد.","Valid JSON":"JSON معتبر","Invalid JSON":"JSON نامعتبر"
+ }
+};
+function safeGet(key,fallback){try{return localStorage.getItem(key)||fallback}catch(e){return fallback}}
+function safeSet(key,value){try{localStorage.setItem(key,value)}catch(e){}}
+let uiLanguage=safeGet("cai-language","en")==="fa"?"fa":"en";
+let uiMode=safeGet("cai-mode","night")==="day"?"day":"night";
+let savedTheme=safeGet("cai-theme","brown");
+let uiTheme=Object.prototype.hasOwnProperty.call({brown:1,purple:1,blue:1,green:1,yellow:1,orange:1,red:1},savedTheme)?savedTheme:"brown";
+const themeColors={brown:"#b98a62",purple:"#bd91f5",blue:"#83b8ff",green:"#80d6a5",yellow:"#edcf73",orange:"#f0a46b",red:"#f1848e"};
+function tr(text){return uiLanguage==="fa"?(translations.fa[text]||text):text}
+function updateCrumb(key){
+ const el=document.getElementById("crumb");
+ if(!el)return;
+ el.dataset.crumbKey=key;
+ el.textContent=tr(key);
+ const parent=el.parentElement;
+ if(parent&&parent.classList.contains("crumb")&&parent.firstChild&&parent.firstChild.nodeType===Node.TEXT_NODE){
+  parent.firstChild.textContent=tr("WORKSPACE")+" / ";
+ }
+}
+function translateFilters(){filters.querySelectorAll(".filter").forEach((b,i)=>{const label=i===0?"All commands":modules[i-1]?.[1];if(label)b.textContent=tr(label)})}
+function translatePage(){
+ document.documentElement.lang=uiLanguage;
+ document.documentElement.dir=uiLanguage==="fa"?"rtl":"ltr";
+ document.querySelectorAll("#nav button").forEach(b=>{let key=b.dataset.cat==="all"?"All commands":b.dataset.cat==="system"?"System tools":b.dataset.cat==="files"?"File studio":b.dataset.cat==="text"?"Text lab":b.dataset.cat==="math"?"Math engine":b.dataset.cat==="time"?"Time tools":b.dataset.cat==="network"?"Network lab":b.dataset.cat==="web"?"Web utilities":b.dataset.cat==="dev"?"Developer kit":b.dataset.cat==="design"?"Design desk":b.dataset.cat==="games"?"Fun & games":b.dataset.cat==="productivity"?"Productivity":b.dataset.cat==="ai"?"AI assistant":"Settings";if(b.id!=="settingsNav")b.innerHTML=`<span>${b.querySelector("span")?.textContent||"◈"}</span> ${tr(key)}`;else b.innerHTML=`<span>⚙</span> ${tr("Settings")}`});
+ document.querySelectorAll("[data-i18n]").forEach(el=>{let key=el.dataset.i18n;const map={settingsShortcut:"Settings",settingsEyebrow:"PERSONALIZE YOUR WORKSPACE",settingsTitle:"Settings",settingsDesc:"Tune the look and language of your command environment.",backWorkspace:"← Back to workspace",appearanceTitle:"Appearance",appearanceDesc:"Switch between a calm night workspace and a bright day workspace.",night:"Night",nightDesc:"Dark background",day:"Day",dayDesc:"Light background",themeTitle:"UI color theme",themeDesc:"Choose an accent color. The entire interface will adapt.",brown:"Brown",purple:"Purple",blue:"Blue",green:"Green",yellow:"Yellow",orange:"Orange",red:"Red",languageTitle:"Language",languageDesc:"Translate the interface and command responses. Command names always stay in English.",aiThemeTitle:"AI signature theme",aiThemeDesc:"AI tools have their own luminous identity with a violet-to-cyan glow, separate from your selected UI accent.",settingsFoot:"Your preferences apply instantly and are saved when browser storage is available."};el.textContent=tr(map[key]||key)});
+ document.querySelector(".eyebrow").textContent=tr("YOUR PERSONAL COMMAND ENVIRONMENT");
+ document.querySelector(".hero h1").textContent=tr("Make something happen.");
+ document.querySelector(".hero p").textContent=tr("A compact command universe with tools for text, math, files, design, development and more. Search a command or run it directly.");
+ document.querySelector(".commandbar input").placeholder=tr("Type a command… e.g. ai.ask hello there");
+ document.querySelector(".run").textContent=tr("RUN ↗");
+ document.querySelectorAll(".stat small").forEach((el,i)=>el.textContent=tr(["COMMAND LIBRARY","COMMAND GROUPS","RUNS THIS SESSION","DISCOVERED"][i]));
+ document.querySelector(".section-head h2").textContent=tr("Command library");
+ document.querySelector(".term-title").textContent="⌘  "+tr("OUTPUT CONSOLE");
+ document.querySelector(".helpbox h3").textContent=tr("Quick start");
+ document.querySelector(".helpbox p").textContent=tr("Choose a command from the library, or type its name in the command bar. Some commands accept extra text after the name. This is a local demo engine: it does not connect to the internet or control your device.");
+ document.querySelector(".side-bottom .live").textContent="● "+tr("All systems nominal").toUpperCase();
+ document.querySelector(".side-bottom p").textContent=uiLanguage==="fa"?"COMMAND AI به‌صورت محلی در مرورگر اجرا می‌شود؛ بدون حساب کاربری، سرور یا نصب.":"Command AI runs locally in your browser. No account, server, or installation required.";
+ updateCrumb(document.getElementById("crumb")?.dataset.crumbKey||"All commands");
+ makeFilters();translateFilters();render();
+}
+function setMode(mode){if(mode!=="day"&&mode!=="night")mode="night";uiMode=mode;safeSet("cai-mode",mode);document.body.dataset.mode=mode;document.querySelectorAll("[data-mode-choice]").forEach(b=>b.classList.toggle("active",b.dataset.modeChoice===mode))}
+function setTheme(theme){if(!Object.prototype.hasOwnProperty.call(themeColors,theme))theme="brown";uiTheme=theme;safeSet("cai-theme",theme);document.documentElement.style.setProperty("--accent",themeColors[theme]);document.documentElement.style.setProperty("--accent-soft",themeColors[theme]+"30");document.documentElement.style.setProperty("--accent-border",themeColors[theme]+"70");document.querySelectorAll("[data-theme]").forEach(b=>b.classList.toggle("active",b.dataset.theme===theme))}
+function setLanguage(lang){if(lang!=="fa"&&lang!=="en")lang="en";uiLanguage=lang;safeSet("cai-language",lang);translatePage();document.querySelectorAll("[data-language]").forEach(b=>b.classList.toggle("active",b.dataset.language===lang));document.querySelector("#settingsNav").classList.toggle("active",document.getElementById("settingsPage").hidden===false)}
+function openSettings(){window.scrollTo({top:0,behavior:"smooth"});document.getElementById("settingsPage").hidden=false;document.querySelectorAll("main> :not(#settingsPage)").forEach(el=>el.dataset.hiddenBySettings="1");document.querySelectorAll("main> :not(#settingsPage)").forEach(el=>el.style.display="none");document.getElementById("settingsNav").classList.add("active");updateCrumb("Settings")}
+function closeSettings(){document.getElementById("settingsPage").hidden=true;document.querySelectorAll('[data-hidden-by-settings="1"]').forEach(el=>{el.style.display="";delete el.dataset.hiddenBySettings});document.getElementById("settingsNav").classList.remove("active");updateCrumb(activeCategory==="all"?"All commands":modules.find(m=>m[0]===activeCategory)[1]);translatePage()}
+document.getElementById("settingsNav").addEventListener("click",openSettings);
+document.getElementById("settingsTopBtn").addEventListener("click",openSettings);
+document.getElementById("backWorkspace").addEventListener("click",closeSettings);
+document.querySelectorAll("[data-mode-choice]").forEach(b=>b.addEventListener("click",()=>setMode(b.dataset.modeChoice)));
+document.querySelectorAll("[data-theme]").forEach(b=>b.addEventListener("click",()=>setTheme(b.dataset.theme)));
+document.querySelectorAll("[data-language]").forEach(b=>b.addEventListener("click",()=>setLanguage(b.dataset.language)));
+setMode(uiMode);setTheme(uiTheme);setLanguage(uiLanguage);
+if(uiLanguage==="fa"){const term=document.getElementById("terminal");term.innerHTML='<div class="line"><span class="ok">COMMAND AI v2.6.1</span> — موتور فرمان محلی آماده است.</div><div class="line"><span class="dim">راهنما: برای مشاهده راهنما help را اجرا کنید یا یک کارت فرمان را انتخاب کنید.</span></div><div class="line"><span class="dim">────────────────────────────────────────────────────</span></div>';}
+
+</script>
+</body>
+</html>
